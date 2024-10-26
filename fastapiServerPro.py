@@ -4,9 +4,9 @@
 pip install fastapi uvicorn aiohttp requests bs4
 
 运行，记得要把你云主机的29212端口打开
-python uvicorn fastapiServerPro:app --host 0.0.0.0 --port 29212 --reload
+python -m uvicorn fastapiServerPro:app --host 0.0.0.0 --port 29212 --reload
 
-你的对外地址
+你的对外地址，即系统中需要填的[推送地址]
 http://公网ip:29212/artlist/
 
 核心功能是 56-74行，其他都是下载网页相关的，可以不看
@@ -20,7 +20,7 @@ import traceback
 from datetime import datetime
 import pytz
 from bs4 import BeautifulSoup
-
+from time import sleep
 
 
 SaveJsonDir = "c:\\artlist\\json"
@@ -66,6 +66,7 @@ async def artlist(request: Request):
         
         # 下载网页，如果不需要可以把这行注释掉
         DownArtList(json_data)
+        
         
         return  "success"  
     except:
@@ -210,6 +211,8 @@ def DownArtList(json_data):
             arthtmlstr = DownLoadHtml(url)        
             arthtmlstr = ChangeImgSrc(arthtmlstr, saveImgDir, artname)
             SaveFile(savepath,arthtmlstr)
+            if idx > 3: #超过3篇文章之后，则需要控制下载速度
+                sleep(2) #防止下载过快被屏蔽
     except:
         print(traceback.format_exc())
 

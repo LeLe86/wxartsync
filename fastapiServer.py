@@ -4,12 +4,11 @@
 pip install fastapi uvicorn aiohttp requests bs4
 
 运行，记得要把你云主机的29212端口打开
-python uvicorn fastapiServer:app --host 0.0.0.0 --port 29212 --reload
+python -m uvicorn fastapiServer:app --host 0.0.0.0 --port 29212 --reload
 
-你的对外地址
+你的对外地址，即系统中需要填的[推送地址]
 http://公网ip:29212/artlist/
 
-核心功能是 56-74行，其他都是下载网页相关的，可以不看
 
 '''
 import os

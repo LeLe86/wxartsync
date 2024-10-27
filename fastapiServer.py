@@ -19,29 +19,16 @@ import traceback
 from datetime import datetime
 import pytz
 from bs4 import BeautifulSoup
-
+from WxartDownloader import DownArtList,SaveFile,get_current_time_string
 
 
 SaveJsonDir = "c:\\artlist\\json"
 
 if not os.path.exists(SaveJsonDir):
     os.makedirs(SaveJsonDir)
-
-
-def SaveFile(fpath,fileContent):    
-    with open(fpath,'w',encoding='UTF-8') as f:
-        f.write(fileContent)
-
-# 获取当前时间字符串，精确到毫秒
-def get_current_time_string():
-    tz = pytz.timezone('Asia/Shanghai')
-    current_time = datetime.now(tz) 
-    time_string = current_time.strftime("%Y-%m-%d_%H-%M-%S_%f")    
-    # 只保留微秒的前三位（毫秒）
-    return time_string[:-3]
-
-
-
+    
+# 是否下载文章
+downArtFlag = True
 
 app = FastAPI() 
 @app.post("/artlist/")
@@ -55,6 +42,8 @@ async def artlist(request: Request):
         savepath = os.path.join(SaveJsonDir,current_time)
         SaveFile(savepath,json.dumps(json_data,ensure_ascii=False,indent=4))
         
+        if downArtFlag:
+            DownArtList(json_data)
         
         return  "success"  
     except:

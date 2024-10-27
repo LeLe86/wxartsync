@@ -1,19 +1,11 @@
 '''
 
-先安装必须的包
-pip install fastapi uvicorn aiohttp requests bs4
 
-运行，记得要把你云主机的29212端口打开
-python -m uvicorn fastapiServerPro:app --host 0.0.0.0 --port 29212 --reload
-
-你的对外地址，即系统中需要填的[推送地址]
-http://公网ip:29212/artlist/
 
 核心功能是 56-74行，其他都是下载网页相关的，可以不看
 
 '''
 import os
-from fastapi import FastAPI, Request, HTTPException
 from pprint import pprint
 import json,requests
 import traceback
@@ -23,12 +15,10 @@ from bs4 import BeautifulSoup
 from time import sleep
 
 
-SaveJsonDir = "c:\\artlist\\json"
 SaveTxtDir = "c:\\artlist\\html"
 saveImgDir = "c:\\artlist\\html\\images"
 
-if not os.path.exists(SaveJsonDir):
-    os.makedirs(SaveJsonDir)
+
 if not os.path.exists(SaveTxtDir):
     os.makedirs(SaveTxtDir)
 if not os.path.exists(saveImgDir):
@@ -51,41 +41,7 @@ def get_current_time_string():
 
 
 
-
-app = FastAPI() 
-@app.post("/artlist/")
-async def artlist(request: Request):  
-    try:  
-        json_data = await request.json()
-        pprint(json_data)
-        
-        # 保存发过来的json数据
-        current_time = get_current_time_string() +".txt"
-        savepath = os.path.join(SaveJsonDir,current_time)
-        SaveFile(savepath,json.dumps(json_data,ensure_ascii=False,indent=4))
-        
-        # 下载网页，如果不需要可以把这行注释掉
-        DownArtList(json_data)
-        
-        
-        return  "success"  
-    except:
-        print(traceback.format_exc())
-    return "error"
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+ 
 
 # 下面都是下载网页相关的，可以不看
 # 来源于作者的开源项目   https://github.com/LeLe86/vWeChatCrawl
@@ -183,8 +139,9 @@ def ChangeContent(bs):
 
 def DownArtList(json_data):
     try:
+        artlist = json_data["data"]
         idx = 0 
-        for item in json_data:
+        for item in artlist:
             idx += 1
             url = item["url"]
             title = item["title"]
